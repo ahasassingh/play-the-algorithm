@@ -4,7 +4,7 @@ import { OrbitControls, Html, Line, Sphere } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Activity, Info, TrendingUp, TrendingDown } from 'lucide-react';
+import { Brain, Maximize2, X } from 'lucide-react';
 import { Interaction } from '../types';
 
 interface NeuralBrainVisualizationProps {
@@ -435,50 +435,55 @@ export const PreferenceModelWidget: React.FC<NeuralBrainVisualizationProps> = ({
     prevPrefsRef.current = preferences;
   }, [preferences]);
 
-  const [isPanelsExpanded, setIsPanelsExpanded] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const recentEvents = history.slice(-4).reverse();
-  const sortedTextList = Object.entries(preferences)
-    .map(([cat, val]) => ({ cat, weight: Math.round(val * 100), meta: CATEGORY_MAP[cat] || { id: cat, name: cat, icon: '📌' } }))
-    .sort((a, b) => b.weight - a.weight);
+  // Close modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsModalOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
-    <div className="glass-panel border border-white/10 rounded-3xl p-5 shadow-2xl space-y-4 relative overflow-hidden select-none hud-corner-box font-mono">
-      {/* Header Live Status Indicator */}
-      <div className="flex items-center justify-between pb-3 border-b border-white/10">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-[#07070b] border border-[#00F0FF]/30 text-[#00F0FF]">
-            <Brain className="animate-pulse" size={20} />
+    <>
+      <div className="glass-panel border border-white/10 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-3 relative overflow-hidden select-none hud-corner-box font-mono h-full flex flex-col justify-between">
+        {/* Header Live Status Indicator */}
+        <div className="flex items-center justify-between pb-2.5 border-b border-white/10 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-[#07070b] border border-[#00F0FF]/30 text-[#00F0FF]">
+              <Brain className="animate-pulse" size={18} />
+            </div>
+            <div>
+              <h3 className="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider font-mono">
+                [ 3D PREFERENCE MATRIX ]
+              </h3>
+              <p className="text-[10px] text-slate-400 font-mono">// Neural Vector Weights</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider font-mono">
-              [ 3D ALGORITHMIC PREFERENCE MATRIX ]
-            </h3>
-            <p className="text-[10px] text-slate-400 font-mono">// Real-time Machine Learning Neural Vector Weights</p>
+
+          <div className="flex items-center gap-2">
+            {/* Live Learning Status Badge */}
+            <div className="flex items-center gap-2 bg-[#07070b] px-2.5 py-1 rounded-xl border border-white/10 text-[10px] font-bold font-mono">
+              <span className={`w-2 h-2 rounded-full ${activeCategory ? 'bg-[#FF0055] animate-ping' : 'bg-[#00FF9D] animate-pulse'}`} />
+              <span className={activeCategory ? 'text-[#FF0055]' : 'text-[#00FF9D]'}>{learningStatus}</span>
+            </div>
+
+            {/* Click to Pop-Up Modal Button */}
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#00F0FF]/10 hover:bg-[#00F0FF]/25 border border-[#00F0FF]/40 text-[#00F0FF] text-[10px] font-bold font-mono transition-all shadow-[0_0_12px_rgba(0,240,255,0.15)] hover:shadow-[0_0_18px_rgba(0,240,255,0.35)] cursor-pointer"
+              title="Click to pop up interactive 3D view"
+            >
+              <Maximize2 size={12} />
+              <span className="hidden sm:inline">POP OUT 3D</span>
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Collapse / Expand Side Panels Toggle */}
-          <button
-            onClick={() => setIsPanelsExpanded(!isPanelsExpanded)}
-            className="px-2.5 py-1 rounded-xl bg-[#07070b] hover:bg-[#131520] border border-white/10 text-[10px] font-mono text-slate-300 transition-colors hidden sm:block"
-          >
-            {isPanelsExpanded ? '[ FOCUS 3D GRAPH ]' : '[ SHOW MATRIX LOG ]'}
-          </button>
-
-          {/* Live Learning Status Badge */}
-          <div className="flex items-center gap-2 bg-[#07070b] px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-bold font-mono">
-            <span className={`w-2 h-2 rounded-full ${activeCategory ? 'bg-[#FF0055] animate-ping' : 'bg-[#00FF9D] animate-pulse'}`} />
-            <span className={activeCategory ? 'text-[#FF0055]' : 'text-[#00FF9D]'}>{learningStatus}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Layout Grid: 3D Canvas + Side Panels */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-stretch">
-        {/* Left Column: 3D Three.js Interactive Neural Brain Canvas */}
-        <div className={`${isPanelsExpanded ? 'md:col-span-8' : 'md:col-span-12'} flex flex-col items-center justify-center relative bg-slate-950 border border-slate-800/90 rounded-2xl p-2 shadow-inner h-[520px] overflow-hidden transition-all duration-300`}>
+        {/* Main Layout: 3D Canvas (Fits column height) */}
+        <div className="w-full flex-1 min-h-[260px] flex flex-col items-center justify-center relative bg-slate-950 border border-slate-800/90 rounded-2xl p-2 shadow-inner overflow-hidden transition-all duration-300">
           {hasWebGL ? (
             <NeuralScene3D
               preferences={preferences}
@@ -491,104 +496,121 @@ export const PreferenceModelWidget: React.FC<NeuralBrainVisualizationProps> = ({
             <div className="text-center text-xs text-slate-400 p-4">WebGL disabled. 3D Neural Scene unavailable.</div>
           )}
 
-          {/* Interactive Hover Tooltip Drawer */}
+          {/* Inline Compact Tooltip */}
           {hoveredNode && (
             <motion.div
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
-              className="absolute bottom-3 inset-x-4 bg-slate-900/95 border border-cyan-400/80 rounded-xl p-2.5 text-xs shadow-2xl backdrop-blur-md flex items-center justify-between z-30 pointer-events-none"
+              className="absolute bottom-2 inset-x-3 bg-slate-900/95 border border-cyan-400/80 rounded-xl p-2 text-xs shadow-2xl backdrop-blur-md flex items-center justify-between z-30 pointer-events-none"
             >
               <div className="flex items-center gap-2">
-                <span className="text-xl">{CATEGORY_MAP[hoveredNode]?.icon}</span>
+                <span className="text-lg">{CATEGORY_MAP[hoveredNode]?.icon}</span>
                 <div>
-                  <span className="font-bold text-white block">{hoveredNode}</span>
-                  <span className="text-[10px] text-cyan-400 font-mono">
-                    Learned Weight: {Math.round((preferences[hoveredNode] ?? 0.5) * 100)}% &bull; Influence: {(preferences[hoveredNode] ?? 0.5) >= 0.7 ? 'HIGH' : (preferences[hoveredNode] ?? 0.5) >= 0.5 ? 'MEDIUM' : 'LOW'}
+                  <span className="font-bold text-white block text-[11px]">{hoveredNode}</span>
+                  <span className="text-[9px] text-cyan-400 font-mono">
+                    Learned Weight: {Math.round((preferences[hoveredNode] ?? 0.5) * 100)}%
                   </span>
                 </div>
               </div>
-              <div className="text-[10px] text-slate-300 italic max-w-[140px] text-right">
-                3D attraction brings stronger interests closer to core.
-              </div>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="pointer-events-auto text-[9px] text-cyan-300 underline font-mono cursor-pointer"
+              >
+                Expand
+              </button>
             </motion.div>
           )}
         </div>
+      </div>
 
-        {/* Right Column: Recent Learning Events Panel + Readable Text Model (4 cols) */}
-        {isPanelsExpanded && (
-          <div className="md:col-span-4 space-y-4">
-          {/* Recent Learning Activity Log Panel */}
-          <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-2.5 shadow-inner">
-            <h4 className="text-[11px] font-bold text-slate-300 uppercase tracking-wider font-mono flex items-center gap-1.5">
-              <Activity size={14} className="text-cyan-400" />
-              Recent Learning Signals
-            </h4>
+      {/* Pop-Up Modal for Interactive 3D View */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-xl"
+            onClick={() => setIsModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.92, opacity: 0, y: 15 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="bg-[#090b14] border border-[#00F0FF]/40 rounded-3xl p-5 shadow-[0_0_50px_rgba(0,240,255,0.25)] w-full max-w-5xl space-y-4 relative overflow-hidden select-none hud-corner-box font-mono"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-[#07070b] border border-[#00F0FF]/30 text-[#00F0FF]">
+                    <Brain className="animate-pulse" size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider font-mono">
+                      [ 3D ALGORITHMIC PREFERENCE MATRIX - INTERACTIVE VIEW ]
+                    </h3>
+                    <p className="text-[10px] text-slate-400 font-mono">// Drag to rotate, scroll to zoom, hover nodes to inspect real-time vector weights</p>
+                  </div>
+                </div>
 
-            {recentEvents.length > 0 ? (
-              <div className="space-y-2">
-                {recentEvents.map((evt, idx) => {
-                  const isHigh = evt.engagementPercent >= 70;
-                  return (
-                    <div
-                      key={idx}
-                      className="p-2.5 rounded-xl bg-slate-900 border border-slate-800/80 flex items-center justify-between text-xs"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-base">{CATEGORY_MAP[evt.category]?.icon || '📌'}</span>
-                        <div>
-                          <span className="font-bold text-slate-100 block">{evt.category}</span>
-                          <span className="text-[10px] text-slate-400 font-mono">
-                            {isHigh ? 'Strong watch time signal' : 'Skipped / lower interest'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className={`font-mono font-bold flex items-center gap-0.5 text-xs ${isHigh ? 'text-emerald-400' : 'text-amber-400'}`}>
-                          {isHigh ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
-                          {isHigh ? '+15' : '-5'}
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 bg-[#07070b] px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-bold font-mono">
+                    <span className={`w-2 h-2 rounded-full ${activeCategory ? 'bg-[#FF0055] animate-ping' : 'bg-[#00FF9D] animate-pulse'}`} />
+                    <span className={activeCategory ? 'text-[#FF0055]' : 'text-[#00FF9D]'}>{learningStatus}</span>
+                  </div>
+
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="p-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                    title="Close"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Large Modal 3D Canvas */}
+              <div className="w-full flex flex-col items-center justify-center relative bg-slate-950 border border-slate-800/90 rounded-2xl p-2 shadow-inner h-[65vh] max-h-[600px] min-h-[400px] overflow-hidden">
+                {hasWebGL ? (
+                  <NeuralScene3D
+                    preferences={preferences}
+                    activeCategory={activeCategory}
+                    hoveredNode={hoveredNode}
+                    setHoveredNode={setHoveredNode}
+                    changes={changes}
+                  />
+                ) : (
+                  <div className="text-center text-xs text-slate-400 p-4">WebGL disabled. 3D Neural Scene unavailable.</div>
+                )}
+
+                {/* Modal Interactive Tooltip Drawer */}
+                {hoveredNode && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute bottom-4 inset-x-6 bg-slate-900/95 border border-cyan-400/80 rounded-xl p-3 text-xs shadow-2xl backdrop-blur-md flex items-center justify-between z-30 pointer-events-none"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-2xl">{CATEGORY_MAP[hoveredNode]?.icon}</span>
+                      <div>
+                        <span className="font-bold text-white text-sm block">{hoveredNode}</span>
+                        <span className="text-[11px] text-cyan-400 font-mono">
+                          Learned Weight: {Math.round((preferences[hoveredNode] ?? 0.5) * 100)}% &bull; Influence: {(preferences[hoveredNode] ?? 0.5) >= 0.7 ? 'HIGH' : (preferences[hoveredNode] ?? 0.5) >= 0.5 ? 'MEDIUM' : 'LOW'}
                         </span>
                       </div>
                     </div>
-                  );
-                })}
+                    <div className="text-[11px] text-slate-300 italic max-w-[180px] text-right">
+                      3D attraction brings stronger interests closer to core.
+                    </div>
+                  </motion.div>
+                )}
               </div>
-            ) : (
-              <div className="p-3 text-center text-[11px] text-slate-500 italic bg-slate-900/50 rounded-xl border border-slate-800/50">
-                Awaiting user content recommendation decisions...
-              </div>
-            )}
-          </div>
-
-          {/* Accessible Text Representation: Current Learned Model Cards List */}
-          <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-2.5 shadow-inner">
-            <h4 className="text-[11px] font-bold text-slate-300 uppercase tracking-wider font-mono flex items-center gap-1.5">
-              <Info size={14} className="text-cyan-400" />
-              What The Algorithm Knows
-            </h4>
-
-            <div className="grid grid-cols-2 gap-2 max-h-36 overflow-y-auto pr-1">
-              {sortedTextList.map((node) => (
-                <div
-                  key={node.cat}
-                  className={`p-2 rounded-xl border flex items-center justify-between text-xs ${node.cat === activeCategory
-                    ? 'bg-cyan-950/80 border-cyan-400 text-cyan-200 shadow-sm'
-                    : 'bg-slate-900 border-slate-800 text-slate-300'
-                    }`}
-                >
-                  <div className="flex items-center gap-1.5 truncate">
-                    <span className="text-sm">{node.meta.icon}</span>
-                    <span className="font-bold truncate text-[11px]">{node.meta.name}</span>
-                  </div>
-                  <span className="font-mono font-bold text-[11px] text-cyan-400 ml-1">
-                    {node.weight}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-      </div>
-    </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };

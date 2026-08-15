@@ -1,10 +1,10 @@
 import React from 'react';
 import { useGame } from '../context/GameContext';
-import { HelpCircle, Activity, Volume2, VolumeX, Cpu, Terminal } from 'lucide-react';
+import { HelpCircle, Volume2, VolumeX, Cpu } from 'lucide-react';
 import { soundFx } from '../utils/sound';
 
 export const Navbar: React.FC = () => {
-  const { stage, setStage, resetGame, currentRound } = useGame();
+  const { stage, resetGame, currentRound } = useGame();
   const [audioMuted, setAudioMuted] = React.useState(soundFx.getMuted());
 
   const toggleAudio = () => {

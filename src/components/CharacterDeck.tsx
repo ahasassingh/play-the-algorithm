@@ -107,58 +107,101 @@ export const CharacterDeck: React.FC<CharacterDeckProps> = ({ characters, onSele
 
       {/* Physical Card Deck Viewport with Smooth Layout Transitions */}
       <div className="relative w-full max-w-md h-[430px] flex items-center justify-center my-auto">
-        <AnimatePresence mode="sync">
-          {characters.map((char, index) => {
-            // Determine relative position from active card (-2, -1, 0, 1, 2)
-            let relativeOffset = index - currentIndex;
-            if (relativeOffset > Math.floor(characters.length / 2)) {
-              relativeOffset -= characters.length;
-            } else if (relativeOffset < -Math.floor(characters.length / 2)) {
-              relativeOffset += characters.length;
-            }
+        <div 
+          className="relative w-full h-[540px] sm:h-[580px] flex items-center justify-center"
+          style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}
+        >
+          <AnimatePresence mode="sync">
+            {characters.map((char, index) => {
+              // Determine relative position from active card
+              let offset = index - currentIndex;
+              if (offset > Math.floor(characters.length / 2)) {
+                offset -= characters.length;
+              } else if (offset < -Math.floor(characters.length / 2)) {
+                offset += characters.length;
+              }
 
-            const absOffset = Math.abs(relativeOffset);
-            if (absOffset > 2) return null;
+              const isFront = offset === 0;
+              const absOffset = Math.abs(offset);
 
-            const isFront = relativeOffset === 0;
+              let translateX = 0;
+              let translateZ = 0;
+              let rotateY = 0;
+              let scale = 1;
+              let opacity = 1;
 
-            // Smooth fan geometry calculations
-            const targetRotate = relativeOffset * 10;
-            const targetX = relativeOffset * 70;
-            const targetY = absOffset * 14;
-            const targetScale = 1 - absOffset * 0.08;
-            const targetOpacity = 1 - absOffset * 0.25;
+              if (offset === 0) {
+                translateX = 0;
+                translateZ = 80;
+                rotateY = 0;
+                scale = 1;
+                opacity = 1;
+              } else if (offset === 1) {
+                translateX = 330;
+                translateZ = -50;
+                rotateY = -18;
+                scale = 0.78;
+                opacity = 0.9;
+              } else if (offset === -1) {
+                translateX = -330;
+                translateZ = -50;
+                rotateY = 18;
+                scale = 0.78;
+                opacity = 0.9;
+              } else if (offset === 2) {
+                translateX = 540;
+                translateZ = -120;
+                rotateY = -30;
+                scale = 0.60;
+                opacity = 0.35;
+              } else if (offset === -2) {
+                translateX = -540;
+                translateZ = -120;
+                rotateY = 30;
+                scale = 0.60;
+                opacity = 0.35;
+              } else {
+                const sign = Math.sign(offset);
+                translateX = sign * (540 + (absOffset - 2) * 160);
+                translateZ = -180;
+                rotateY = -sign * 35;
+                scale = 0.45;
+                opacity = 0;
+              }
 
-            return (
-              <motion.div
-                key={char.id}
-                style={isFront ? { x: dragX, rotate: dragRotate } : {}}
-                drag={isFront && !isSelecting ? 'x' : false}
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.5}
-                onDragEnd={handleDragEnd}
-                initial={{ opacity: 0, scale: 0.8, y: 30 }}
-                animate={
-                  isSelecting && isFront
-                    ? { y: -40, scale: 1.06, zIndex: 50, opacity: 1, rotate: 0, x: 0 }
-                    : isSelecting && !isFront
-                    ? { scale: 0.7, opacity: 0, y: 80 }
-                    : {
-                        x: targetX,
-                        y: targetY,
-                        scale: targetScale,
-                        rotate: targetRotate,
-                        zIndex: 30 - absOffset,
-                        opacity: targetOpacity,
-                      }
-                }
-                exit={{ opacity: 0, scale: 0.75, transition: { duration: 0.25 } }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 180,
-                  damping: 24,
-                  mass: 0.8,
-                }}
+              return (
+                <motion.div
+                  key={char.id}
+                  style={{
+                    zIndex: 50 - absOffset * 10,
+                    transformStyle: 'preserve-3d',
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                  }}
+                  drag={isFront && !isSelecting ? 'x' : false}
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.4}
+                  onDragEnd={handleDragEnd}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={
+                    isSelecting && isFront
+                      ? { y: -20, scale: 1.05, zIndex: 60, opacity: 1, rotateY: 0, x: 0, z: 80 }
+                      : isSelecting && !isFront
+                      ? { scale: 0.7, opacity: 0, y: 40 }
+                      : {
+                          x: translateX,
+                          y: 0,
+                          z: translateZ,
+                          scale: scale,
+                          rotateY: rotateY,
+                          opacity: opacity,
+                        }
+                  }
+                  exit={{ opacity: 0, scale: 0.75, transition: { duration: 0.25 } }}
+                  transition={{
+                    duration: 0.6,
+                    ease: [0.25, 0.1, 0.25, 1.0],
+                  }}
                 className={`absolute w-[310px] sm:w-[350px] bg-slate-900/95 backdrop-blur-2xl border-2 rounded-3xl p-6 shadow-2xl flex flex-col justify-between select-none ${
                   isFront
                     ? 'border-cyan-400/80 shadow-cyan-500/25 cursor-grab active:cursor-grabbing'
@@ -215,14 +258,15 @@ export const CharacterDeck: React.FC<CharacterDeckProps> = ({ characters, onSele
                   </div>
                 </div>
 
-                {/* Bio summary */}
-                <p className="text-xs text-slate-400 mt-3 line-clamp-2 leading-relaxed">
-                  {char.description}
-                </p>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
+                  {/* Bio summary */}
+                  <p className="text-xs text-slate-400 mt-3 line-clamp-2 leading-relaxed">
+                    {char.description}
+                  </p>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Navigation Arrows */}

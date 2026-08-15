@@ -1,0 +1,88 @@
+{
+  "tutorial": {
+    "welcome": {
+      "title": "WELCOME, ALGORITHM.",
+      "subtitle": "You are about to control what your user sees.",
+      "rule1": "Your job is simple: Keep them engaged.",
+      "catch": "But there's a catch: What you recommend today changes what they see tomorrow.",
+      "button": "LET'S BEGIN →"
+    },
+    "meet": {
+      "title": "THIS IS YOUR USER",
+      "greeting": "Meet {{name}}.",
+      "explanation": "These are clues about what they might enjoy.",
+      "conclusion": "Keep these signals in mind.",
+      "button": "GOT IT →"
+    },
+    "decision": {
+      "title": "YOUR FIRST DECISION",
+      "prompt": "Choose what your user should see.",
+      "subprompt": "Based on what you know about {{name}}, which content would you recommend?"
+    },
+    "chosen": {
+      "good": "Good.",
+      "next": "But before we show it..."
+    },
+    "predict": {
+      "title": "BEFORE WE SHOW IT...",
+      "prompt": "How do you think {{name}} will react?",
+      "high": "HIGH (80-100%)",
+      "medium": "MEDIUM (50-79%)",
+      "low": "LOW (0-49%)",
+      "action": "Make your prediction."
+    },
+    "result": {
+      "watching": "{{name}} is watching...",
+      "correct": "✓ GOOD PREDICTION",
+      "incorrect": "Unexpected — you learned something new about your user."
+    },
+    "learning": {
+      "title": "THE ALGORITHM LEARNED SOMETHING",
+      "explanation": "Your user's reaction became a signal.",
+      "subexplanation": "The stronger the signal, the more confident the system becomes about what they like.",
+      "conclusion": "This is personalization.",
+      "button": "CONTINUE →"
+    },
+    "feedbackLoop": {
+      "title": "THE FEEDBACK LOOP",
+      "step1": "YOU RECOMMEND",
+      "step2": "USER ENGAGES",
+      "step3": "ALGORITHM LEARNS",
+      "step4": "RECOMMENDATIONS CHANGE",
+      "conclusion": "AND THE LOOP CONTINUES.",
+      "explanation": "Every decision gives the system more information. More engagement creates stronger preference signals, which influence future recommendations.",
+      "emphasis": "YOUR CHOICES CHANGE THE FEED.",
+      "button": "UNDERSTOOD →"
+    },
+    "objectives": {
+      "title": "BALANCING OBJECTIVES",
+      "obj1Title": "OBJECTIVE 1 — ENGAGEMENT",
+      "obj1Desc": "Your recommendations should keep the user interested.",
+      "obj2Title": "OBJECTIVE 2 — DIVERSITY",
+      "obj2Desc": "Repeatedly recommending the same type of content can reduce the diversity of the feed.",
+      "explanation": "Your challenge isn't just to maximize engagement. Watch what happens to the feed as you optimize.",
+      "button": "NEXT →"
+    },
+    "why": {
+      "title": "WANT TO KNOW WHY?",
+      "explanation": "Tap WHY? whenever you want to understand which signals influenced a recommendation.",
+      "subexplanation": "You're not just playing. You're learning how recommendation signals interact.",
+      "button": "GOT IT →"
+    },
+    "realization": {
+      "title": "THE REALIZATION",
+      "line1": "YOUR DECISIONS ↓ CHANGE THE USER'S FEED",
+      "line2": "At first, you're just choosing what to show.",
+      "line3": "But every choice teaches the system something.",
+      "line4": "Over time, your recommendations can become increasingly personalized.",
+      "button": "I'M READY →"
+    },
+    "ready": {
+      "title": "YOU KNOW HOW IT WORKS.",
+      "subtitle": "NOW TRY TO BE THE ALGORITHM.",
+      "tagline": "Make the recommendations. Learn from the reactions. Watch the feed evolve.",
+      "start": "START SIMULATION →",
+      "skip": "SKIP TUTORIAL"
+    }
+  }
+}

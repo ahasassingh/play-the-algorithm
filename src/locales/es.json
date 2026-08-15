@@ -1,0 +1,25 @@
+{
+  "tutorial": {
+    "welcome": {
+      "title": "BIENVENIDO, ALGORITMO.",
+      "subtitle": "Estás a punto de controlar lo que ve tu usuario.",
+      "rule1": "Tu trabajo es simple: Mantenlos cautivados.",
+      "catch": "Pero hay un detalle: Lo que recomiendes hoy cambia lo que verán mañana.",
+      "button": "COMENZAR →"
+    },
+    "meet": {
+      "title": "ESTE ES TU USUARIO",
+      "greeting": "Conoce a {{name}}.",
+      "explanation": "Estas son pistas sobre lo que podría disfrutar.",
+      "conclusion": "Ten en cuenta estas señales.",
+      "button": "ENTENDIDO →"
+    },
+    "ready": {
+      "title": "YA SABES CÓMO FUNCIONA.",
+      "subtitle": "AHORA INTENTA SER EL ALGORITMO.",
+      "tagline": "Haz recomendaciones. Aprende de las reacciones. Observa la evolución.",
+      "start": "INICIAR SIMULACIÓN →",
+      "skip": "OMITIR TUTORIAL"
+    }
+  }
+}

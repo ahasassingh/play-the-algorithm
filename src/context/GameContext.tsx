@@ -32,6 +32,10 @@ interface GameContextType {
   makeRecommendation: (content: ContentItem) => void;
   advanceRound: () => void;
   resetGame: () => void;
+  isTutorialActive: boolean;
+  startTutorial: () => void;
+  skipTutorial: () => void;
+  completeTutorial: () => void;
 }
 
 const DEFAULT_ENGAGEMENT_WEIGHTS: AlgorithmWeights = {
@@ -167,6 +171,24 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setStage('balanced-challenge');
   };
 
+  const [isTutorialActive, setIsTutorialActive] = useState<boolean>(() => {
+    return localStorage.getItem('algorithmLensTutorialCompleted') !== 'true';
+  });
+
+  const startTutorial = () => {
+    setIsTutorialActive(true);
+  };
+
+  const completeTutorial = () => {
+    localStorage.setItem('algorithmLensTutorialCompleted', 'true');
+    setIsTutorialActive(false);
+  };
+
+  const skipTutorial = () => {
+    localStorage.setItem('algorithmLensTutorialCompleted', 'true');
+    setIsTutorialActive(false);
+  };
+
   return (
     <GameContext.Provider value={{
       stage,
@@ -190,7 +212,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       lastReaction,
       makeRecommendation,
       advanceRound,
-      resetGame
+      resetGame,
+      isTutorialActive,
+      startTutorial,
+      skipTutorial,
+      completeTutorial
     }}>
       {children}
     </GameContext.Provider>

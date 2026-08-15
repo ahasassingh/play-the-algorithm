@@ -1,0 +1,25 @@
+{
+  "tutorial": {
+    "welcome": {
+      "title": "BIENVENUE, ALGORITHME.",
+      "subtitle": "Vous allez contrôler ce que votre utilisateur voit.",
+      "rule1": "Votre rôle est simple: Garder leur attention.",
+      "catch": "Mais il y a un piège: Ce que vous recommandez aujourd'hui transforme ce qu'ils verront demain.",
+      "button": "COMMENCER →"
+    },
+    "meet": {
+      "title": "VOICI VOTRE UTILISATEUR",
+      "greeting": "Rencontrez {{name}}.",
+      "explanation": "Voici des indices sur ce qu'il pourrait aimer.",
+      "conclusion": "Gardez ces signaux à l'esprit.",
+      "button": "COMPRIS →"
+    },
+    "ready": {
+      "title": "VOUS SAVEZ COMMENT CELA FONCTIONNE.",
+      "subtitle": "MAINTENANT, DEVENEZ L'ALGORITHME.",
+      "tagline": "Faites des recommandations. Apprenez des réactions. Observez l'évolution du fil.",
+      "start": "LANCER LA SIMULATION →",
+      "skip": "PASSER LE TUTORIEL"
+    }
+  }
+}
